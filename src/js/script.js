@@ -9,6 +9,7 @@
     books: {
       list: '.books-list',
       all: '.book__image',
+      filters: '.filters',
     },
   };
 
@@ -23,7 +24,7 @@
       const thisApp = this;
       for (let book of thisApp.data.books) {
         const generateHTML = templates.bookList(book);
-        generatedDOM = utils.createDOMFromHTML(generateHTML);
+        const generatedDOM = utils.createDOMFromHTML(generateHTML);
         const wrapper = document.querySelector(select.books.list);
         wrapper.appendChild(generatedDOM);
       }
@@ -37,8 +38,26 @@
     initActions() {
       const thisApp = this;
       let favoriteBooks = [];
+      const favorites = document.querySelector(select.books.list);
+      favorites.addEventListener('dblclick', function (event) {
+        event.preventDefault();
+        if (event.target.offsetParent.classList.contains('book__image')) {
+          const dataId = event.target.offsetParent.getAttribute('data-id');
+          if (dataId !== favoriteBooks[favoriteBooks.indexOf(dataId)]) {
+            console.log(dataId);
+            favoriteBooks.push(dataId);
+            console.log(favoriteBooks);
+            event.target.offsetParent.classList.add('favorite');
+          } else {
+            event.target.offsetParent.classList.remove('favorite');
+            const indOfData = favoriteBooks.indexOf(dataId);
+            favoriteBooks.splice(indOfData, 1);
+            console.log(favoriteBooks);
+          }
+        }
+      });
 
-      const favorites = document.querySelectorAll(select.books.all);
+      /*const favorites = document.querySelectorAll(select.books.all);
       for (const favorite of favorites) {
         const dataId = favorite.getAttribute('data-id');
 
@@ -58,7 +77,23 @@
             console.log(favoriteBooks);
           }
         });
-      }
+      }*/
+
+      thisApp.domFilter.addEventListener('click', function (event) {
+        if (
+          event.target.tagName == 'INPUT' &&
+          event.target.attributes.type.nodeValue == 'checkbox' &&
+          event.target.attributes.name.nodeValue == 'filter'
+        ) {
+          console.log(event.target.attributes.value.nodeValue);
+        }
+      });
+    },
+
+    initFilters() {
+      const thisApp = this;
+      const filters = [];
+      thisApp.domFilter = document.querySelector(select.books.filters);
     },
 
     init: function () {
@@ -71,6 +106,7 @@
 
       thisApp.initData();
       thisApp.initBookList();
+      thisApp.initFilters();
       thisApp.initActions();
     },
   };
