@@ -87,12 +87,21 @@
         ) {
           console.log(event.target.attributes.value.nodeValue);
         }
+        if (event.target.checked) {
+          thisApp.filters.push(event.target.attributes.value.nodeValue);
+        } else {
+          const findFilter = thisApp.filters.indexOf(
+            event.target.attributes.value.nodeValue
+          );
+          thisApp.filters.splice(findFilter, 1);
+        }
+        console.log(thisApp.filters);
       });
     },
 
     initFilters() {
       const thisApp = this;
-      const filters = [];
+      thisApp.filters = [];
       thisApp.domFilter = document.querySelector(select.books.filters);
     },
 
