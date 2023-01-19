@@ -96,6 +96,7 @@
           thisApp.filters.splice(findFilter, 1);
         }
         console.log(thisApp.filters);
+        thisApp.filterBooks();
       });
     },
 
@@ -103,6 +104,30 @@
       const thisApp = this;
       thisApp.filters = [];
       thisApp.domFilter = document.querySelector(select.books.filters);
+    },
+
+    filterBooks() {
+      const thisApp = this;
+      //thisApp.domFilter = document.querySelector(select.books.filters);
+      for (let book of thisApp.data.books) {
+        let shouldBeHidden = false;
+        for (const filter of thisApp.filters) {
+          if (!book.details[filter]) {
+            shouldBeHidden = true;
+            break;
+          }
+        }
+
+        const bookId = document.querySelector(
+          `.book__image[data-id="${book.id}"]`
+        );
+
+        if (shouldBeHidden) {
+          bookId.classList.add('hidden');
+        } else {
+          bookId.classList.remove('hidden');
+        }
+      }
     },
 
     init: function () {
