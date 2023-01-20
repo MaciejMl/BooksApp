@@ -112,7 +112,7 @@
       for (let book of thisApp.data.books) {
         let shouldBeHidden = false;
         for (const filter of thisApp.filters) {
-          if (!book.details[filter]) {
+          if (book.details[filter] == true) {
             shouldBeHidden = true;
             break;
           }
