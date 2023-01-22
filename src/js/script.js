@@ -4,6 +4,7 @@
   const select = {
     templateOf: {
       bookList: '#template-book',
+      bars: '.book__rating__fill',
     },
 
     books: {
@@ -23,13 +24,14 @@
     initBookList() {
       const thisApp = this;
       for (let book of thisApp.data.books) {
+        book.ratingBgc = thisApp.determineRatingBgc(book.rating);
+        book.ratingWidth = book.rating * 10;
         const generateHTML = templates.bookList(book);
         const generatedDOM = utils.createDOMFromHTML(generateHTML);
         const wrapper = document.querySelector(select.books.list);
         wrapper.appendChild(generatedDOM);
       }
     },
-
     initData: function () {
       const thisApp = this;
       thisApp.data = dataSource;
@@ -108,7 +110,6 @@
 
     filterBooks() {
       const thisApp = this;
-      //thisApp.domFilter = document.querySelector(select.books.filters);
       for (let book of thisApp.data.books) {
         let shouldBeHidden = false;
         for (const filter of thisApp.filters) {
@@ -130,12 +131,25 @@
       }
     },
 
+    determineRatingBgc(rating) {
+      if (rating < 6) {
+        return 'linear-gradient(to bottom,  #fefcea 0%, #f1da36 100%)';
+      }
+      if (rating > 6 && rating <= 8) {
+        return 'linear-gradient(to bottom, #b4df5b 0%,#b4df5b 100%)';
+      }
+      if (rating > 8 && rating <= 9) {
+        return 'linear-gradient(to bottom, #299a0b 0%, #299a0b 100%)';
+      }
+      if (rating > 9) {
+        return 'linear-gradient(to bottom, #ff0084 0%,#ff0084 100%)';
+      }
+    },
+
     init: function () {
       const thisApp = this;
       console.log('*** App starting ***');
       console.log('thisApp:', thisApp);
-      //console.log('classNames:', classNames);
-      //console.log('settings:', settings);
       console.log('templates:', templates);
 
       thisApp.initData();
