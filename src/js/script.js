@@ -4,7 +4,6 @@
   const select = {
     templateOf: {
       bookList: '#template-book',
-      bars: '.book__rating__fill',
     },
 
     books: {
@@ -14,31 +13,57 @@
     },
   };
 
+  const classNames = {
+    books: {
+      favorite: 'favorite',
+      hidden: 'hidden',
+    },
+  };
+
+  const settings = {
+    progressBar: {
+      background1: 'linear-gradient(to bottom,  #fefcea 0%, #f1da36 100%)',
+      background2: 'linear-gradient(to bottom, #b4df5b 0%,#b4df5b 100%)',
+      background3: 'linear-gradient(to bottom, #299a0b 0%, #299a0b 100%)',
+      background4: 'linear-gradient(to bottom, #ff0084 0%,#ff0084 100%)',
+    },
+  };
+
   const templates = {
     bookList: Handlebars.compile(
       document.querySelector(select.templateOf.bookList).innerHTML
     ),
   };
 
-  const app = {
-    initBookList() {
-      const thisApp = this;
-      for (let book of thisApp.data.books) {
-        book.ratingBgc = thisApp.determineRatingBgc(book.rating);
+  class BooksList {
+    constructor() {
+      const thisBookList = this;
+
+      thisBookList.initData();
+      thisBookList.renderBookList();
+      thisBookList.initFilters();
+      thisBookList.initActions();
+    }
+
+    initData() {
+      const thisBookList = this;
+      thisBookList.data = dataSource;
+    }
+
+    renderBookList() {
+      const thisBookList = this;
+      for (let book of thisBookList.data.books) {
+        book.ratingBgc = thisBookList.determineRatingBgc(book.rating);
         book.ratingWidth = book.rating * 10;
         const generateHTML = templates.bookList(book);
         const generatedDOM = utils.createDOMFromHTML(generateHTML);
         const wrapper = document.querySelector(select.books.list);
         wrapper.appendChild(generatedDOM);
       }
-    },
-    initData: function () {
-      const thisApp = this;
-      thisApp.data = dataSource;
-    },
+    }
 
     initActions() {
-      const thisApp = this;
+      const thisBookList = this;
       let favoriteBooks = [];
       const favorites = document.querySelector(select.books.list);
       favorites.addEventListener('dblclick', function (event) {
@@ -49,9 +74,11 @@
             console.log(dataId);
             favoriteBooks.push(dataId);
             console.log(favoriteBooks);
-            event.target.offsetParent.classList.add('favorite');
+            event.target.offsetParent.classList.add(classNames.books.favorite);
           } else {
-            event.target.offsetParent.classList.remove('favorite');
+            event.target.offsetParent.classList.remove(
+              classNames.books.favorite
+            );
             const indOfData = favoriteBooks.indexOf(dataId);
             favoriteBooks.splice(indOfData, 1);
             console.log(favoriteBooks);
@@ -59,29 +86,7 @@
         }
       });
 
-      /*const favorites = document.querySelectorAll(select.books.all);
-      for (const favorite of favorites) {
-        const dataId = favorite.getAttribute('data-id');
-
-        favorite.addEventListener('dblclick', function (event) {
-          event.preventDefault();
-          //(!favorite.classList.contains('favorite'))
-          //(dataId !== favoriteBooks[favoriteBooks.indexOf(dataId)])
-          if (dataId !== favoriteBooks[favoriteBooks.indexOf(dataId)]) {
-            console.log(dataId);
-            favoriteBooks.push(dataId);
-            console.log(favoriteBooks);
-            favorite.classList.add('favorite');
-          } else {
-            favorite.classList.remove('favorite');
-            indOfData = favoriteBooks.indexOf(dataId);
-            favoriteBooks.splice(indOfData, 1);
-            console.log(favoriteBooks);
-          }
-        });
-      }*/
-
-      thisApp.domFilter.addEventListener('click', function (event) {
+      thisBookList.domFilter.addEventListener('click', function (event) {
         if (
           event.target.tagName == 'INPUT' &&
           event.target.attributes.type.nodeValue == 'checkbox' &&
@@ -90,29 +95,29 @@
           console.log(event.target.attributes.value.nodeValue);
         }
         if (event.target.checked) {
-          thisApp.filters.push(event.target.attributes.value.nodeValue);
+          thisBookList.filters.push(event.target.attributes.value.nodeValue);
         } else {
-          const findFilter = thisApp.filters.indexOf(
+          const findFilter = thisBookList.filters.indexOf(
             event.target.attributes.value.nodeValue
           );
-          thisApp.filters.splice(findFilter, 1);
+          thisBookList.filters.splice(findFilter, 1);
         }
-        console.log(thisApp.filters);
-        thisApp.filterBooks();
+        console.log(thisBookList.filters);
+        thisBookList.filterBooks();
       });
-    },
+    }
 
     initFilters() {
-      const thisApp = this;
-      thisApp.filters = [];
-      thisApp.domFilter = document.querySelector(select.books.filters);
-    },
+      const thisBookList = this;
+      thisBookList.filters = [];
+      thisBookList.domFilter = document.querySelector(select.books.filters);
+    }
 
     filterBooks() {
-      const thisApp = this;
-      for (let book of thisApp.data.books) {
+      const thisBookList = this;
+      for (let book of thisBookList.data.books) {
         let shouldBeHidden = false;
-        for (const filter of thisApp.filters) {
+        for (const filter of thisBookList.filters) {
           if (book.details[filter] == true) {
             shouldBeHidden = true;
             break;
@@ -129,35 +134,23 @@
           bookId.classList.remove('hidden');
         }
       }
-    },
+    }
 
     determineRatingBgc(rating) {
       if (rating < 6) {
-        return 'linear-gradient(to bottom,  #fefcea 0%, #f1da36 100%)';
+        return settings.progressBar.background1;
       }
       if (rating > 6 && rating <= 8) {
-        return 'linear-gradient(to bottom, #b4df5b 0%,#b4df5b 100%)';
+        return settings.progressBar.background2;
       }
       if (rating > 8 && rating <= 9) {
-        return 'linear-gradient(to bottom, #299a0b 0%, #299a0b 100%)';
+        return settings.progressBar.background3;
       }
       if (rating > 9) {
-        return 'linear-gradient(to bottom, #ff0084 0%,#ff0084 100%)';
+        return settings.progressBar.background4;
       }
-    },
+    }
+  }
 
-    init: function () {
-      const thisApp = this;
-      console.log('*** App starting ***');
-      console.log('thisApp:', thisApp);
-      console.log('templates:', templates);
-
-      thisApp.initData();
-      thisApp.initBookList();
-      thisApp.initFilters();
-      thisApp.initActions();
-    },
-  };
-
-  app.init();
+  const app = new BooksList();
 }
