@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars*/
 {
   ('use strict');
 
@@ -43,8 +44,12 @@
 
       thisBookList.initData();
       thisBookList.getElements();
+      thisBookList.renderBooksList();
       thisBookList.initActions();
+    }
 
+    renderBooksList() {
+      const thisBookList = this;
       for (let book of thisBookList.data.books) {
         book.ratingBgc = thisBookList.determineRatingBgc(book.rating);
         book.ratingWidth = book.rating * 10;
@@ -154,5 +159,4 @@
   }
 
   const app = new BooksList();
-  app;
 }
